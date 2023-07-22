@@ -77,13 +77,18 @@ def admin():
 def blog_add():
     if request.method == 'POST':
         title = request.form['title']
-        description = request.form['description']
+        content = request.form['content']
         created_on = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
-        conn = sqlite3.connect('blog.db')
+        conn = sqlite3.connect('myblog.db')
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO post (title, description, created_on) VALUES (?, ?, ?)',(title, description, created_on))
+        cursor.execute('INSERT INTO posts (title, content, created_on) VALUES (?, ?, ?)',(title, content, created_on))
         conn.commit()
         conn.close()
         return jsonify({"status": "success"})
     return render_template('admin.html')
+
+
+
+if __name__ == '__main__':
+    app.run()
