@@ -54,13 +54,25 @@ def post_id(post_id):
 
 
 
-
-
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
 
+
+@app.route('/contact-add', methods=['POST'])
+def contactMeUser():
+    name = request.form['name']
+    email = request.form['email']
+    msg = request.form['msg']
+    created_on = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    conn = sqlite3.connect('myblog.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO contacts (name, email, msg, created_on) VALUES (?, ?, ?, ?)', (name, email, msg, created_on))
+    conn.commit()
+    conn.close()
+    return render_template('contact.html')
+
+   
 
 
 
