@@ -54,8 +54,22 @@ def post_id(post_id):
 
 
 
-@app.route('/contact')
+@app.route('/contact', methods = ['GET', 'POST'])
 def contact():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        msg = request.form['msg']
+        if name == '' or email == '' or msg == '':
+            return jsonify({'message': 'error'})
+        else: 
+            created_on = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            conn = sqlite3.connect('myblog.db')
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO contacts (name, email, msg, created_on) VALUES (?, ?, ?, ?)', (name, email, msg, created_on))
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'success'})
     return render_template('contact.html')
 
 

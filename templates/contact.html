@@ -210,7 +210,7 @@
           Bir sorunuz veya öneriniz mi var, yoksa sadece merhaba mı demek istiyorsunuz? Buyurun. Ne yapacağınızı biliyorsunuz.
         </p>
       </div>
-    <form id="form" class="pt-16">
+    <form id="form" method="POST" class="pt-16">
         <div class="flex flex-col sm:flex-row">
           <div class="w-full sm:mr-3 sm:w-1/2">
             <label
@@ -246,7 +246,7 @@
           >
           <textarea
             id="message"
-            name="message"
+            name="msg"
             cols="30"
             rows="9"
             placeholder="Duymam gerektiğini düşündüğün her şeyi söyle."
@@ -255,6 +255,7 @@
         </div>
         <button
             name="button"
+            type="submit"
             id="button"
             class="mt-10 mb-12 block bg-secondary px-10 py-4 text-center font-body text-xl font-semibold text-white transition-colors hover:bg-green sm:inline-block sm:text-left sm:text-2xl"
         >
@@ -267,26 +268,34 @@
   </div>
 
   <script>
-  $(document).ready(function() {
-    $("#button").click(function() {
-      var formData = new FormData($("form")[0]);
-  
-      $.ajax({
-        type: "POST",
-        url: "/contact-add",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-          alert("Başarıyla gönderildi.");
-        },
-        error: function(status, error) {
-          alert("Hata oluştu. Lütfen tekrar deneyiniz.");
+  $(document).ready(function() { 
+      $('#form').on('submit', function(e){
+        const name = $('#name').val();
+        const email = $('#email').val();
+        const message = $('#message').val();
+        e.preventDefault();
+        if (name === '' || email === '' || message === ''){
+          alert('Boş alan bırakılamaz');
+        } else {
+          $.post('/contact', {
+            name: name,
+            email: email,
+            msg: message
+          }, function(response){
+            if (response.message === 'success'){
+              alert('Başarılı');
+            } else {
+              alert('Başarısız');
+            }
+          });
         }
+        $('#name').val('');
+        $('#email').val('');
+        $('#message').val('');
       });
     });
-  });
-</script>  
+</script>
+
 
 
   
