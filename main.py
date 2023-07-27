@@ -11,8 +11,34 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/post')
+@app.route('/blog')
 def all_post():
+ return render_template('post.html')
+
+
+@app.route('/blog/<int:post_id>')
+def post_id(post_id):
+    blog_data = []
+    with sqlite3.connect('myblog.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM posts WHERE id = ?', (post_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            return "Post not found.", 404
+
+        blog_data = {
+            'title': row[1],
+            'content': row[2],
+            'created_on': row[3]
+        }
+
+    return render_template('post.html', blog_data=blog_data)
+
+
+
+@app.route('/project')
+def project():
     blog_data = []
     with sqlite3.connect('myblog.db') as conn:
         cursor = conn.cursor()
@@ -28,28 +54,7 @@ def all_post():
                 'title': row[1],
                 'content': row[2],
             })
-
-    return render_template('index.html', posts=blog_data)
-
-
-@app.route('/post/<int:post_id>')
-def post_id(post_id):
-    blog_data = []
-    with sqlite3.connect('myblog.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM posts WHERE id = ?', (post_id,))
-        row = cursor.fetchone()
-
-        if row is None:
-            return "Post not found.", 404
-
-        blog_data = {
-            'title': row[2],
-            'content': row[3],
-            'created_on': row[4]
-        }
-
-    return render_template('post.html', blog_data=blog_data)
+    return render_template('project.html', posts=blog_data)
 
 
 
@@ -113,7 +118,6 @@ def blog_add():
         conn.close()
         return jsonify({"status": "success"})
     return render_template('admin.html')
-
 
 
 if __name__ == '__main__':
