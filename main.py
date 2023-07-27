@@ -11,13 +11,10 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/blog')
-def all_post():
- return render_template('post.html')
 
 
 @app.route('/blog/<int:post_id>')
-def post_id(post_id):
+def blog(post_id):
     blog_data = []
     with sqlite3.connect('myblog.db') as conn:
         cursor = conn.cursor()
@@ -29,8 +26,8 @@ def post_id(post_id):
 
         blog_data = {
             'title': row[1],
-            'content': row[2],
-            'created_on': row[3]
+            'content': row[3],
+            'created_on': row[5]
         }
 
     return render_template('post.html', blog_data=blog_data)
@@ -52,7 +49,9 @@ def project():
             blog_data.append({
                 'id': row[0],
                 'title': row[1],
-                'content': row[2],
+                'summary': row[2],
+                'content': row[3],
+                'img': row[4]
             })
     return render_template('project.html', posts=blog_data)
 
@@ -108,12 +107,14 @@ def admin():
 def blog_add():
     if request.method == 'POST':
         title = request.form['title']
+        summary = request.form['summary']
+        img = request.form['img']
         content = request.form['content']
         created_on = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
         conn = sqlite3.connect('myblog.db')
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO posts (title, content, created_on) VALUES (?, ?, ?)',(title, content, created_on))
+        cursor.execute('INSERT INTO posts (title,summary,img, content, created_on) VALUES (?, ?, ?)',(title,summary,img, content, created_on))
         conn.commit()
         conn.close()
         return jsonify({"status": "success"})
