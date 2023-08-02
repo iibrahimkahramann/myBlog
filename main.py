@@ -107,18 +107,40 @@ def admin():
 def blog_add():
     if request.method == 'POST':
         title = request.form['title']
-        summary = request.form['summary']
         img = request.form['img']
+        summary = request.form['summary']
         content = request.form['content']
         created_on = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
         conn = sqlite3.connect('myblog.db')
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO posts (title,summary,img, content, created_on) VALUES (?, ?, ?)',(title,summary,img, content, created_on))
+        cursor.execute('INSERT INTO posts (title,img, summary, content, created_on) VALUES (?, ?, ?, ?, ?)',(title,img, summary, content, created_on))
         conn.commit()
         conn.close()
         return jsonify({"status": "success"})
     return render_template('admin.html')
+
+
+
+
+@app.route('/admin-del', methods=['DELETE'])
+def blog_del():
+    if request.method == 'DELETE':
+        id = request.form['id']
+        conn = sqlite3.connect('myblog.db')
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM posts WHERE id = ?', (id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success"})
+    return render_template('admin.html')
+    
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
