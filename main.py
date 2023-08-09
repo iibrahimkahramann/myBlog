@@ -123,7 +123,7 @@ def blog_add():
 
 
 
-@app.route('/admin-del', methods=['DELETE'])
+@app.route('/admin-del', methods=['GET','DELETE'])
 def blog_del():
     if request.method == 'DELETE':
         id = request.form['id']
@@ -133,7 +133,7 @@ def blog_del():
         conn.commit()
         conn.close()
         return jsonify({"status": "success"})
-    return render_template('admin.html')
+    return render_template('delete.html')
     
 
 
